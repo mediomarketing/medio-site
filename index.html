@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="el">
 <head>
@@ -229,29 +230,33 @@
       <h2 style="margin-bottom:18px">Connect with Us</h2>
       <div class="about" style="grid-template-columns:1fr 1fr">
         <div class="panel">
-          <form action="https://formspree.io/f/xblpveyg" method="POST"></form>
-            <div>
-              <label>First name*<br><input required name="firstName" /></label>
-            </div>
-            <div>
-              <label>Last name*<br><input required name="lastName" /></label>
-            </div>
-            <div>
-              <label>Email*<br><input required type="email" name="email" /></label>
-            </div>
-            <div>
-              <label>Phone<br><input name="phone" /></label>
-            </div>
-            <div class="full">
-              <label>Title*<br><input required name="title" /></label>
-            </div>
-            <div class="full">
-              <label>Message<br><textarea name="message"></textarea></label>
-            </div>
-            <div class="full" style="margin-top:6px">
-              <button class="btn" type="submit">Submit</button>
-            </div>
-          </form>
+          <form action="https://formspree.io/f/xblpveyg" method="POST">
+  <div class="full">
+    <label>Όνομα</label>
+    <input type="text" name="name" placeholder="Το όνομά σου" required>
+  </div>
+  <div>
+    <label>Email</label>
+    <input type="email" name="email" placeholder="Το email σου" required>
+  </div>
+  <div>
+    <label>Τηλέφωνο</label>
+    <input type="tel" name="phone" placeholder="Προαιρετικά">
+  </div>
+  <div class="full">
+    <label>Μήνυμα</label>
+    <textarea name="message" placeholder="Γράψε το μήνυμά σου..." required></textarea>
+  </div>
+
+  <!-- honeypot για spam -->
+  <input type="text" name="_gotcha" style="display:none">
+
+  <div class="full">
+    <button class="btn" type="submit">Αποστολή</button>
+  </div>
+</form>
+
+<div id="form-status" style="margin-top:14px;display:none;padding:12px 14px;border-radius:12px;border:1px solid var(--border);background:rgba(255,255,255,.06);"></div>
         </div>
         <div class="panel">
           <h3>Medio Health Marketing</h3>
@@ -293,5 +298,54 @@
       drawer.setAttribute('aria-hidden','true');
     }));
   </script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector("form[action^='https://formspree.io/']");
+  const status = document.getElementById("form-status");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (status) status.style.display = "none";
+
+    const data = new FormData(form);
+
+    try {
+      const res = await fetch(form.action, {
+        method: "POST",
+        body: data,
+        headers: { "Accept": "application/json" }
+      });
+
+      if (res.ok) {
+        if (status) {
+          status.textContent = "✅ Το μήνυμα στάλθηκε επιτυχώς! Θα επικοινωνήσουμε σύντομα.";
+          status.style.color = "#22d3ee";
+          status.style.display = "block";
+        } else {
+          alert("Το μήνυμα στάλθηκε επιτυχώς!");
+        }
+        form.reset();
+      } else {
+        if (status) {
+          status.textContent = "⚠️ Κάτι πήγε στραβά. Δοκίμασε ξανά.";
+          status.style.color = "#fda4af";
+          status.style.display = "block";
+        } else {
+          alert("Κάτι πήγε στραβά. Δοκίμασε ξανά.");
+        }
+      }
+    } catch (err) {
+      if (status) {
+        status.textContent = "❌ Αποτυχία σύνδεσης. Έλεγξε το δίκτυό σου.";
+        status.style.color = "#fda4af";
+        status.style.display = "block";
+      } else {
+        alert("Αποτυχία σύνδεσης. Έλεγξε το δίκτυό σου.");
+      }
+    }
+  });
+});
+</script>
 </body>
 </html>
